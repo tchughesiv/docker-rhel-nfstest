@@ -1,34 +1,31 @@
 # docker build --rm -t rhel7/nfstest .
-# docker run -tdi --cap-add SYS_ADMIN --device /dev/fuse rhel7/nfstest
-# TEST - docker exec {container} ls -la /misc/nfstest
+# docker run -tdi rhel7/nfstest
+# TEST - docker exec {container} ls -la $MNTPOINT
 
 FROM registry.access.redhat.com/rhel7
 MAINTAINER Tommy Hughes <tohughes@redhat.com>
 
+ENV MNTPOINT=/nfstest \
+    USER=nfstest \
+    UID_GID=2001
+
 RUN set -x \
-#    && groupadd -r nfsnobody -g 65534 && useradd -u 65534 -r -g nfsnobody -m -s /sbin/nologin -c "Anonymous NFS User" -d /var/lib/nfs nfsnobody \
-    && groupadd -r nfsnobody -g 65534 && useradd -u 65534 -r -g nfsnobody -m -c "Anonymous NFS User" -d /var/lib/nfs nfsnobody \
-    && echo "%nfsnobody   ALL= NOPASSWD: /usr/sbin/automount" >> /etc/sudoers \
+    && mkdir -p /home/$USER/.ssh \
+    && chown $USER:$USER /home/$USER \
+    && chmod 700 /home/$USER/.ssh \
+    && groupadd -r $USER -g $UID_GID && useradd -u $UID_GID -r -g $USER -m -c "$USER User" -d /home/$USER $USER \
     && yum-config-manager --enable rhel-7-server-rpms \
     && yum -y install deltarpm \
     && yum -y update \
     && echo "installing necessary packages" \
-    && yum -y install autofs iputils nfs-utils fuse sudo \
-#    && yum -y install iputils nfs-utils fuse \
+    && yum -y install iputils sshfs fuse \
     && yum clean all \
-    && mkdir -p /misc \
-#    && mkdir -p /nfstest \
-    && echo "nfstest     -fstype=nfs,rw,soft,intr,rsize=8192,wsize=8192       10.1.10.223:/var/export/nfstest" >> /etc/auto.misc \
-    && sed -i '/automount/d' /etc/nsswitch.conf \
-    && echo "automount:  files" >> /etc/nsswitch.conf \
-    && setcap cap_sys_admin+p /usr/sbin/automount
-#    && setcap cap_sys_admin+p /usr/bin/mount \
-#    && setcap cap_sys_admin+p /usr/sbin/mount.nfs
+    && mkdir -p $MNTPOINT \
+    && chown $USER:$USER $MNTPOINT
 
-# RUN echo "10.1.10.223:/var/export/nfstest /nfstest nfs auto,proto=tcp,rw,user,rsize=8192,wsize=8192,intr" > /etc/fstab
-### CMD mount /nfstest
+USER $USER
+ADD id_rsa /home/$USER/.ssh/
+RUN chmod 600 /home/$USER/.ssh/id_rsa
+WORKDIR /home/$USER
 
-USER nfsnobody
-WORKDIR /
-CMD sudo automount -f
-# CMD sleep 300
+CMD sshfs -f $USER@10.1.10.223:/var/export/nfstest $MNTPOINT -o IdentityFile=/home/$USER/.ssh/id_rsa -o reconnect -o workaround=all
