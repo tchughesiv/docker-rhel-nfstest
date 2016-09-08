@@ -11,9 +11,9 @@ ENV MNTPOINT=/nfstest \
 
 RUN set -x \
     && mkdir -p /home/$USER/.ssh \
-    && chown $USER:$USER /home/$USER \
     && chmod 700 /home/$USER/.ssh \
     && groupadd -r $USER -g $UID_GID && useradd -u $UID_GID -r -g $USER -m -c "$USER User" -d /home/$USER $USER \
+    && chown $USER:$USER /home/$USER \
     && yum-config-manager --enable rhel-7-server-rpms \
     && yum -y install deltarpm \
     && yum -y update \
