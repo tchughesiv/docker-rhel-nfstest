@@ -5,7 +5,10 @@
 FROM registry.access.redhat.com/rhel7
 MAINTAINER Tommy Hughes <tohughes@redhat.com>
 
-ENV MNTPOINT=/nfstest \
+ENV FSERVERIP=10.1.10.223 \
+    FSERVERHOSTNAME=10.1.10.223 \
+    FSMNT=/var/export/nfstest \
+    MNTPOINT=/nfstest \
     NFSUSER=nfstest \
     UID_GID=2001
 
@@ -34,5 +37,5 @@ RUN chown $NFSUSER:$NFSUSER /home/$NFSUSER/.ssh/id_rsa \
 USER $NFSUSER
 WORKDIR /home/$NFSUSER
 
-CMD sshfs -f $NFSUSER@10.1.10.223:/var/export/nfstest $MNTPOINT -o IdentityFile=/home/$NFSUSER/.ssh/id_rsa -o reconnect -o workaround=all
+CMD ssh-keyscan -H $FSERVERIP > /home/$NFSUSER/.ssh/known_hosts && ssh-keyscan -H $FSERVERHOSTNAME >> /home/$NFSUSER/.ssh/known_hosts && sshfs -f $NFSUSER@$FSERVERIP:$FSMNT $MNTPOINT -o IdentityFile=/home/$NFSUSER/.ssh/id_rsa -o reconnect -o workaround=all
 # mknod -m 666 dev/fuse c 10 229
