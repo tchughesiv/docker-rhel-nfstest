@@ -10,10 +10,9 @@ ENV MNTPOINT=/nfstest \
     UID_GID=2001
 
 RUN set -x \
+    && groupadd -r $USER -g $UID_GID && useradd -u $UID_GID -r -g $USER -m -c "$USER User" -d /home/$USER $USER \
     && mkdir -p /home/$USER/.ssh \
     && chmod 700 /home/$USER/.ssh \
-    && groupadd -r $USER -g $UID_GID && useradd -u $UID_GID -r -g $USER -m -c "$USER User" -d /home/$USER $USER \
-    && chown $USER:$USER /home/$USER \
     && yum-config-manager --enable rhel-7-server-rpms \
     && yum -y install deltarpm \
     && yum -y update \
