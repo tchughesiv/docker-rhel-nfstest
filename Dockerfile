@@ -1,5 +1,5 @@
 # docker build --rm -t rhel7/nfstest .
-# docker run -tdi --privileged --device /dev/fuse rhel7/nfstest
+# docker run -tdi --cap-add SYS_ADMIN --device /dev/fuse rhel7/nfstest
 # TEST - docker exec {container} ls -la $MNTPOINT
 
 FROM registry.access.redhat.com/rhel7
@@ -21,9 +21,8 @@ RUN set -x \
     && yum -y install deltarpm \
     && yum -y update \
     && echo "installing necessary packages" \
-    && yum -y install iputils fuse-sshfs fuse sudo \
+    && yum -y install iputils fuse-sshfs fuse \
     && yum clean all \
-    && echo "%$NFSUSER   ALL= NOPASSWD: /usr/bin/sshfs" >> /etc/sudoers \
     && mkdir -p $MNTPOINT \
     && chown $NFSUSER:$NFSUSER $MNTPOINT \
     && chmod 4755 /usr/bin/fusermount
@@ -35,5 +34,5 @@ RUN chown $NFSUSER:$NFSUSER /home/$NFSUSER/.ssh/id_rsa \
 USER $NFSUSER
 WORKDIR /home/$NFSUSER
 
-CMD sudo sshfs -f $NFSUSER@10.1.10.223:/var/export/nfstest $MNTPOINT -o IdentityFile=/home/$NFSUSER/.ssh/id_rsa -o reconnect -o workaround=all
+CMD sshfs -f $NFSUSER@10.1.10.223:/var/export/nfstest $MNTPOINT -o IdentityFile=/home/$NFSUSER/.ssh/id_rsa -o reconnect -o workaround=all
 # mknod -m 666 dev/fuse c 10 229
