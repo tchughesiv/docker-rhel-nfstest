@@ -8,7 +8,6 @@ FROM registry.access.redhat.com/rhel7
 MAINTAINER Tommy Hughes <tohughes@redhat.com>
 
 ENV FSERVERIP=10.1.10.223 \
-    FSERVERHOSTNAME=nfstest.test.com \
     FSMNT=/var/export/nfstest \
     FSUSER=nfstest \
     UID_GID=2001
