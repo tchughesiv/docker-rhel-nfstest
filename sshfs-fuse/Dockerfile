@@ -1,5 +1,5 @@
-# docker build --rm -t rhel7/nfstest .
-# docker run -tdi --cap-add SYS_ADMIN --device /dev/fuse rhel7/nfstest
+# docker build --rm -t rhel7/sshfs-fuse .
+# docker run -tdi --cap-add SYS_ADMIN --device /dev/fuse rhel7/sshfs-fuse
 # TEST - docker exec {container} ls -la /$MNTPOINT
 
 FROM registry.access.redhat.com/rhel7

@@ -1,5 +1,5 @@
-# docker build --rm -t rhel7/nfstest .
-# docker run -tdi --cap-add SYS_ADMIN --device /dev/fuse rhel7/nfstest
+# docker build --rm -t rhel7/automount-nfs .
+# docker run -tdi --cap-add SYS_ADMIN --device /dev/fuse rhel7/automount-nfs
 # TEST - docker exec {container} ls -la /misc/$MNTPOINT
 
 FROM registry.access.redhat.com/rhel7
