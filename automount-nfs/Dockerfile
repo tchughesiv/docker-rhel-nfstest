@@ -20,9 +20,9 @@ RUN set -x \
     && echo "installing necessary packages" \
     && yum -y install autofs iputils nfs-utils fuse sudo \
     && yum clean all \
-    && echo "%$FSUSER   ALL= NOPASSWD: /usr/sbin/automount" >> /etc/sudoers \
+    && echo "$FSUSER   ALL= NOPASSWD: /usr/sbin/automount" >> /etc/sudoers \
     && mkdir /misc \
-    && echo "$MNTPOINT    -fstype=nfs,rw,soft,intr,rsize=8192,wsize=8192    $FSERVERIP:$FSMNT" >> /etc/auto.misc \
+    && echo "$MNTPOINT    -fstype=nfs4,rw,soft,intr,rsize=8192,wsize=8192    $FSERVERIP:$FSMNT" >> /etc/auto.misc \
     && sed -i '/automount:/d' /etc/nsswitch.conf \
     && echo "automount:  files" >> /etc/nsswitch.conf
 #    && setcap cap_sys_admin+p /usr/sbin/automount
