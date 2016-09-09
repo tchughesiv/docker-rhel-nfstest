@@ -1,0 +1,20 @@
+#!/bin/sh
+SCRIPT=$0
+function validate_dest {
+    HOMEDIR=$(eval echo ~$SUDO_USER)
+    echo 
+    if [[ "$1" =~ ^${HOMEDIR}/.* ]]; then
+	return
+    else
+	logger $SUDO_USER attempted to ${SCRIPT} on $1
+	echo "you are only allowed to mount on ${HOMEDIR}"
+	exit -1
+    fi    
+}
+SRC=$1
+DEST=$(/bin/realpath $2)
+validate_dest $DEST
+mount -t nfs "${SRC}" "${DEST}"
+
+# keeps container running... remove when no longer needed
+tail -f /dev/null

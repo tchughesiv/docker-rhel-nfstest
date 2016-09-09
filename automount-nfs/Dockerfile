@@ -1,5 +1,5 @@
 # docker build --rm -t rhel7/automount-nfs .
-# docker run -tdi --cap-add SYS_ADMIN --device /dev/fuse rhel7/automount-nfs
+# docker run -tdi --cap-add SYS_ADMIN rhel7/automount-nfs
 # TEST - docker exec {container} ls -la /misc/$MNTPOINT
 
 FROM registry.access.redhat.com/rhel7
@@ -25,7 +25,6 @@ RUN set -x \
     && echo "$MNTPOINT    -fstype=nfs4,rw,soft,intr,rsize=8192,wsize=8192    $FSERVERIP:$FSMNT" >> /etc/auto.misc \
     && sed -i '/automount:/d' /etc/nsswitch.conf \
     && echo "automount:  files" >> /etc/nsswitch.conf
-#    && setcap cap_sys_admin+p /usr/sbin/automount
 
 USER $FSUSER
 WORKDIR /home/$FSUSER
