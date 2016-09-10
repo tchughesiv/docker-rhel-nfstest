@@ -1,6 +1,6 @@
 # docker build --rm -t rhel7/nfsmount .
-# need docker fixes first ## docker run -tdi --cap-add SYS_ADMIN rhel7/nfsmount
-# docker run -tdi --privileged rhel7/nfsmount
+# docker run -tdi --cap-add SYS_ADMIN rhel7/nfsmount
+# docker run -tdi --cap-add SYS_ADMIN --security-opt label:type:docker_t rhel7/nfsmount
 # TEST - docker exec {container} ls -la $MNTPOINT
 #       e.g. docker exec nfsmount ls -la mnt/
 
@@ -10,7 +10,8 @@ MAINTAINER Tommy Hughes <tohughes@redhat.com>
 ENV FSERVERIP=10.1.10.223 \
     FSMNT=/var/export/nfstest \
     FSUSER=nfstest \
-    UID_GID=2001
+    UID_GID=2001 \
+    MNTTYPE=nfs
 
 # mount point MUST be in user's home dir
 ENV MNTPOINT=/home/$FSUSER/mnt
@@ -21,14 +22,33 @@ RUN set -x \
     && yum -y install deltarpm \
     && yum -y update \
     && echo "installing necessary packages" \
+#    && yum -y install iputils nfs-utils sudo policycoreutils \
     && yum -y install iputils nfs-utils sudo \
     && yum clean all \
     && echo "$FSUSER   ALL= NOPASSWD: /usr/bin/nfsmount" > /etc/sudoers.d/$FSUSER
 
-ADD nfsmount /usr/bin/
-RUN chmod 755 /usr/bin/nfsmount
+RUN echo $'#!/bin/sh\n\
+SCRIPT=$0\n\
+function validate_dest {\n\
+    HOMEDIR=$(eval echo ~$SUDO_USER)\n\
+    echo\n\
+    if [[ "$1" =~ ^${HOMEDIR}/.* ]]; then\n\
+	return\n\
+    else\n\
+	logger $SUDO_USER attempted to ${SCRIPT} on $1\n\
+	echo "you are only allowed to mount on ${HOMEDIR}"\n\
+	exit -1\n\
+    fi\n\
+}\n\
+TYPE=$1\n\
+SRC=$2\n\
+DEST=$(/bin/realpath $3)\n\
+validate_dest $DEST\n\
+mount -vt "${TYPE}" "${SRC}" "${DEST}"' > /usr/bin/nfsmount \
+    && chmod 755 /usr/bin/nfsmount
 
 USER $FSUSER
 RUN mkdir $MNTPOINT
 WORKDIR /home/$FSUSER
-CMD sudo nfsmount $FSERVERIP:$FSMNT $MNTPOINT
+# (&& tail -f /dev/null) tailing /dev/null merely keeps container running... remove when no longer needed
+CMD sudo nfsmount $MNTTYPE $FSERVERIP:$FSMNT $MNTPOINT && tail -f /dev/null
