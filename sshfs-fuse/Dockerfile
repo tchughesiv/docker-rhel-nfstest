@@ -6,7 +6,7 @@ FROM registry.access.redhat.com/rhel7
 MAINTAINER Tommy Hughes <tohughes@redhat.com>
 
 ENV FSERVERIP=10.1.10.223 \
-    FSERVERHOSTNAME=nfstest.test.com \
+#    FSERVERHOSTNAME=nfstest.test.com \
     FSMNT=/var/export/nfstest \
     MNTPOINT=nfstest \
     FSUSER=nfstest \
@@ -37,4 +37,4 @@ RUN chown $FSUSER:$FSUSER /home/$FSUSER/.ssh/id_rsa \
 USER $FSUSER
 WORKDIR /home/$FSUSER
 
-CMD ssh-keyscan -H $FSERVERIP > /home/$FSUSER/.ssh/known_hosts && ssh-keyscan -H $FSERVERHOSTNAME >> /home/$FSUSER/.ssh/known_hosts && sshfs -f $FSUSER@$FSERVERIP:$FSMNT /$MNTPOINT -o IdentityFile=/home/$FSUSER/.ssh/id_rsa -o reconnect -o workaround=all
+CMD ssh-keyscan -H $FSERVERIP > /home/$FSUSER/.ssh/known_hosts && sshfs -f $FSUSER@$FSERVERIP:$FSMNT /$MNTPOINT -o IdentityFile=/home/$FSUSER/.ssh/id_rsa -o reconnect -o workaround=all
