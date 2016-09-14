@@ -13,7 +13,7 @@ ENV FSERVERIP=10.1.10.223 \
     UID_GID=2001 \
     MNTTYPE=nfs
 
-# mount point MUST be in user's home dir
+# mount point MUST be in user's home dir.
 ENV MNTPOINT=/home/$FSUSER/mnt
 
 RUN set -x \
