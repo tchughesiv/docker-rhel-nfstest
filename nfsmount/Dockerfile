@@ -18,11 +18,10 @@ ENV MNTPOINT=/home/$FSUSER/mnt
 
 RUN set -x \
     && groupadd -r $FSUSER -g $UID_GID && useradd -u $UID_GID -r -g $FSUSER -m -c "$FSUSER User" -d /home/$FSUSER $FSUSER \
-    && yum-config-manager --enable rhel-7-server-rpms \
+    && yum-config-manager --disable \* --enable rhel-7-server-rpms --enable rhel-7-server-extras-rpms --enable rhel-7-server-optional-rpms \
     && yum -y install deltarpm \
     && yum -y update \
     && echo "installing necessary packages" \
-#    && yum -y install iputils nfs-utils sudo policycoreutils \
     && yum -y install iputils nfs-utils sudo \
     && yum clean all \
     && echo "$FSUSER   ALL= NOPASSWD: /usr/bin/nfsmount" > /etc/sudoers.d/$FSUSER
