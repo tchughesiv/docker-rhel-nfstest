@@ -20,7 +20,7 @@ RUN set -x \
     && curl -o epel-release-latest-7.noarch.rpm -SL https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm --retry 999 --retry-max-time 0 -C - \
     && rpm -ivh epel-release-latest-7.noarch.rpm \
     && rm epel-release-latest-7.noarch.rpm \
-    && yum-config-manager --enable rhel-7-server-rpms \
+    && yum-config-manager --disable \* --enable rhel-7-server-rpms \
     && yum -y install deltarpm \
     && yum -y update \
     && echo "installing necessary packages" \
