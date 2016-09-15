@@ -18,7 +18,9 @@ ENV MNTPOINT=/home/$FSUSER/mnt
 
 RUN set -x \
     && groupadd -r $FSUSER -g $UID_GID && useradd -u $UID_GID -r -g $FSUSER -m -c "$FSUSER User" -d /home/$FSUSER $FSUSER \
-    && yum-config-manager --disable \* --enable rhel-7-server-rpms \
+    && yum clean all \
+    && yum-config-manager -q --disable \* \
+    && yum-config-manager --enable rhel-7-server-rpms \
     && yum -y install deltarpm \
     && yum -y update \
     && echo "installing necessary packages" \

@@ -17,10 +17,12 @@ RUN set -x \
     && mkdir -p /home/$FSUSER/.ssh \
     && chown $FSUSER:$FSUSER /home/$FSUSER/.ssh \
     && chmod 700 /home/$FSUSER/.ssh \
+    && yum clean all \
+    && yum-config-manager -q --disable \* \
     && curl -o epel-release-latest-7.noarch.rpm -SL https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm --retry 999 --retry-max-time 0 -C - \
     && rpm -ivh epel-release-latest-7.noarch.rpm \
     && rm epel-release-latest-7.noarch.rpm \
-    && yum-config-manager --disable \* --enable rhel-7-server-rpms \
+    && yum-config-manager --enable rhel-7-server-rpms \
     && yum -y install deltarpm \
     && yum -y update \
     && echo "installing necessary packages" \
