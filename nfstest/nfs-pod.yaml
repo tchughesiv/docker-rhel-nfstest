@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nfs-pod
+  labels:
+    name: nfs-pod
+spec:
+  containers:
+    - name: nfs-pod
+      image: 172.30.93.229:5000/nfstest/nfstest
+      volumeMounts:
+        - name: nfsvol
+          mountPath: /mnt
+  securityContext:
+      supplementalGroups: [2001]
+      privileged: false
+  volumes:
+    - name: nfsvol
+      persistentVolumeClaim:
+        claimName: test-pvc

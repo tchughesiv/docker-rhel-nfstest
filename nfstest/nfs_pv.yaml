@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: test-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteMany
+  nfs: 
+    path: /var/export/nfstest
+    server: 10.19.115.16
+  persistentVolumeReclaimPolicy: Retain
