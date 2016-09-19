@@ -3,9 +3,8 @@ FROM registry.access.redhat.com/rhel7
 MAINTAINER Tommy Hughes <tohughes@redhat.com>
 
 ENV FSUSER=nfstest \
-    UID_GID=2001 \
-    MNTTYPE=nfs
-
+    UID_GID=2001
+    
 RUN groupadd -r $FSUSER -g $UID_GID && useradd -u $UID_GID -r -g $FSUSER -m -c "$FSUSER User" -d /home/$FSUSER $FSUSER
 
 USER $FSUSER
