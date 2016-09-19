@@ -1,6 +1,5 @@
 # docker build --rm -t rhel7/nfsmount .
 # docker run -tdi --cap-add SYS_ADMIN rhel7/nfsmount
-# docker run -tdi --cap-add SYS_ADMIN --security-opt label:type:docker_t rhel7/nfsmount
 # TEST - docker exec {container} ls -la $MNTPOINT
 #       e.g. docker exec nfsmount ls -la mnt/
 
