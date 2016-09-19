@@ -26,6 +26,7 @@ RUN set -x \
     && echo "installing necessary packages" \
     && yum -y install iputils nfs-utils sudo \
     && yum clean all \
+    && sed -i 's/Defaults    requiretty/# Defaults    requiretty/' /etc/sudoers \
     && echo "$FSUSER   ALL= NOPASSWD: /usr/bin/nfsmount" > /etc/sudoers.d/$FSUSER
 
 RUN echo $'#!/bin/sh\n\
