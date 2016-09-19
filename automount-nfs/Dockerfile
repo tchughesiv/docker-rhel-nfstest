@@ -25,6 +25,7 @@ RUN set -x \
     && yum -y install autofs iputils nfs-utils fuse sudo \
     && yum clean all \
     && echo "$FSUSER   ALL= NOPASSWD: /usr/sbin/automount" >> /etc/sudoers \
+    && sed -i 's/Defaults    requiretty/# Defaults    requiretty/' /etc/sudoers \
     && echo "/home/$FSUSER/mnt	/etc/auto.home" >> /etc/auto.master \
     && echo "$MNTPOINT    -fstype=$MNTTYPE,rw,soft,intr,rsize=8192,wsize=8192    $FSERVERIP:$FSMNT" > /etc/auto.home \
     && sed -i '/automount:/d' /etc/nsswitch.conf \
